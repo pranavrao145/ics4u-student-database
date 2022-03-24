@@ -1,4 +1,18 @@
-package app;
+/******************************************************************************
+Program: GUI (Student Database)
+
+Description: This is GUI for this app. This class contains all of the
+methods to run the GUI of the app, such as to draw and update the GUI,
+as well as to attach listeners.
+
+Author: Pranav Rao
+
+Date: March 24, 2022
+*******************************************************************************/
+
+package app; // delcare this class as part of the app package
+
+// import all necessary Swing components
 
 import java.awt.CardLayout;
 import java.awt.Container;
@@ -6,6 +20,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -64,38 +79,71 @@ public class GUI {
   private JLabel lbl_deleteStudent;
   private JComboBox<Integer> comboBox_deleteStudent;
 
+  // this is  special variables that represent the models used to power the
+  // comboBox components in this program
   private DefaultComboBoxModel<Integer> defaultDeletionOptions,
       defaultEditOptions, gradeOptions;
 
+  /**
+   * This is a constructor for the GUI. When the GUI is made in the App class,
+   * this method will be called.
+   */
   public GUI() {
-    initializeValues();
-
-    setupGUI();
-    attachListeners();
-    frame.setVisible(true);
+    initializeValues();     // assigns initial values to some variables declared
+                            // above
+    setupGUI();             // sets up and draws the GUI
+    attachListeners();      // attaches the listeners to various GUI components
+    frame.setVisible(true); // sets the frame to visible so the user can see it
   }
 
+  /**
+   * This method is responsible for setting intial values for some variables
+   * above, specifically the option models for the comboBox components.
+   */
   private void initializeValues() {
     gradeOptions =
         new DefaultComboBoxModel<Integer>(new Integer[] {9, 10, 11, 12});
 
+    // these are empty because deletion options are intially empty and set on
+    // the go
     defaultDeletionOptions = new DefaultComboBoxModel<Integer>();
     defaultEditOptions = new DefaultComboBoxModel<Integer>();
   }
 
+  /**
+   * This method is a GUI utility method to temporarily change a given label
+   * to have the new text, and then change it back. Useful for displaying
+   * errors. Overloaded below for a JButton instead of a label.
+   *
+   * @param label - the label to temporarily change
+   * @param newText - the text to change the label to
+   */
   public static void tempChangeLabel(final JLabel label, final String newText) {
-    final String oldText = label.getText();
+    final String oldText =
+        label.getText();    // get the current text of the label, which we will
+                            // need to revert the label to later
+    label.setText(newText); // set the label's text to the new text supplied
 
-    label.setText(newText);
-
+    // using a SwingWorker object, asynchronously wait for 1 second and then
+    // reset the text of the button the old text
     final SwingWorker<Object, Object> worker =
         new SwingWorker<Object, Object>() {
+          /**
+           * This method sleeps for 1000 milliseconds in a separate thread
+           *
+           * @return - this method returns a generic Object
+           * @throws - this method throws an exception if it fails
+           */
           @Override
           protected Object doInBackground() throws Exception {
             Thread.sleep(1000);
             return null;
           }
 
+          /**
+           * This method will automatically fire when the above background
+           * task is done. It will set the label back to the old text.
+           */
           @Override
           protected void done() {
             label.setText(oldText);
@@ -103,9 +151,19 @@ public class GUI {
           }
         };
 
-    worker.execute();
+    worker.execute(); // this method call executes the SwingWorker and the
+                      // declared methods
   }
 
+  /**
+   * This method is a GUI utility method to temporarily change a given label
+   * to have the new text, and then change it back. Useful for displaying
+   * errors. Overloaded above for a JLabel instead of a button. See above
+   * overload for more detailed documentation.
+   *
+   * @param button - the button to temporarily change
+   * @param newText - the text to change the button to
+   */
   public static void tempChangeLabel(final JButton button,
                                      final String newText) {
     final String oldText = button.getText();
@@ -129,30 +187,56 @@ public class GUI {
     worker.execute();
   }
 
+  /**
+   * This method is a GUI utility that method that will update the table
+   * containing all the students according to the student records stored
+   *
+   * @param table - the variable for the table to update
+   */
   public void updateStudentViewTable(final JTable table) {
+    // get the table model of the given table (needed to manipulate table data)
     final DefaultTableModel tableModel = (DefaultTableModel)table.getModel();
-
+    // remove all elements from the table (including the title row)
     tableModel.getDataVector().removeAllElements();
 
-    tableModel.addRow(new Object[] {"Id", "Name", "Grade"});
-    for (final Student student : Engine.getStudents()) {
-      tableModel.addRow(new Object[] {student.getId(), student.getName(),
-                                      student.getGrade()});
+    tableModel.addRow(new Object[] {
+        "Id", "Name", "Grade"}); // add the title row for student to the table
+    for (final Student student :
+         Engine.getStudents()) { // for each of the students currently stored
+      tableModel.addRow(new Object[] {
+          student.getId(), student.getName(),
+          student.getGrade()}); // add a row to the table which contains the
+                                // information for that particular student
     }
   }
 
+  /**
+   *  This method is a GUI utility method that will update a comboBox to show
+   * the ids of the students currently stored in the database
+   *
+   * @param comboBox - the variable for the comboBox to update
+   */
   private void updateStudentComboBox(final JComboBox<Integer> comboBox) {
-
+    // get the combo box model of the given combo box (needed to manipulate
+    // combo box data)
     final DefaultComboBoxModel<Integer> comboBoxModel =
         (DefaultComboBoxModel<Integer>)comboBox.getModel();
-
+    // remove all elements from the combo box (including the title row)
     comboBoxModel.removeAllElements();
 
-    for (final Student student : Engine.getStudents()) {
-      comboBoxModel.addElement(student.getId());
+    for (final Student student :
+         Engine.getStudents()) { // for each of the students currently stored
+      comboBoxModel.addElement(
+          student.getId()); // add the student's id to the comboBox
     }
   }
 
+  /**
+   * This method draws the GUI itself (i.e. it initializes the components
+   * above). It will essentially create various panels for each view and put
+   * them all into a CardLayout (masterLayout variable above) so that it is
+   * possible to easily switch between the panels
+   */
   private void setupGUI() {
     frame = new JFrame();
     frame.setResizable(false);
@@ -160,7 +244,9 @@ public class GUI {
     masterLayout = new CardLayout();
 
     frame.setBounds(100, 100, 450, 300);
-    frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+    frame.setDefaultCloseOperation(
+        JFrame.DO_NOTHING_ON_CLOSE); // overriding default close behaviour so
+                                     // custom close methods can run
 
     contentPane.setLayout(masterLayout);
 
@@ -320,16 +406,33 @@ public class GUI {
     panel_deleteStudent.add(lbl_deleteStudent);
   }
 
+  /**
+   * This method attaches the appropriate listeners to all components defined
+   * above
+   */
   private void attachListeners() {
+    /*************************************************************************
+     * GENERAL LISTENERS
+     *************************************************************************/
+
+    // add an action listener to do actions when the quit button is clicked
     frame.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(final WindowEvent e) {
-        Engine.saveDataToFile();
-        frame.dispose();
-        System.exit(0);
+        Engine.saveDataToFile(); // save the data in the database to the file
+        frame.dispose();         // dispose of the current frame
+        System.exit(0);          // exit
       }
     });
 
+    /*************************************************************************
+     * STUDENT LISTENERS
+     *************************************************************************/
+
+    // listners for the view students screen
+
+    // add an action listener to the Create button on the view students
+    // panel which will go to the create student screen on click
     btn_viewStudentsCreate.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(final ActionEvent e) {
@@ -337,34 +440,46 @@ public class GUI {
       }
     });
 
+    // add an action listener to the Edit button on the view students
+    // panel which will go to the edit student selection screen on click
     btn_viewStudentsEditSelection.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(final ActionEvent e) {
-
+        // if there are no students
         if (Engine.getStudents().size() == 0) {
-          tempChangeLabel(btn_viewStudentsEditSelection, "No students yet!");
-        } else {
-
+          tempChangeLabel(btn_viewStudentsEditSelection,
+                          "No students yet!"); // display an error message
+        } else { // if there are students to display
+          // update the student selection combobox and switch to the edit
+          // student selection screen
           updateStudentComboBox(comboBox_editStudentSelection);
           masterLayout.show(contentPane, "panel_editStudentSelection");
         }
       }
     });
 
+    // add an action listener to the Delete button on the view students
+    // panel which will go to the delete student screen on click
     btn_viewStudentsDelete.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(final ActionEvent e) {
-
+        // if there are no students
         if (Engine.getStudents().size() == 0) {
-          tempChangeLabel(btn_viewStudentsDelete, "No students yet!");
-        } else {
-
+          tempChangeLabel(btn_viewStudentsDelete,
+                          "No students yet!"); // display an error message
+        } else { // if there are students to display
+          // update the student selection combobox and switch to the delete
+          // student selection screen
           updateStudentComboBox(comboBox_deleteStudent);
           masterLayout.show(contentPane, "panel_deleteStudent");
         }
       }
     });
 
+    // listeners for the add student screen
+
+    // add an action listener to the Cancel button on the add student
+    // panel which will go back to the view student screen on click
     btn_addStudentCancel.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(final ActionEvent e) {
@@ -372,6 +487,8 @@ public class GUI {
       }
     });
 
+    // add an action listener to the Cancel button on the add student
+    // panel which will save a new student with the current entered information
     btn_addStudentSave.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(final ActionEvent e) {
@@ -379,46 +496,69 @@ public class GUI {
         final String newStudentId = textField_addStudentId.getText(),
                      newStudentName = textField_addStudentName.getText();
 
+        // if the text field for the name on the add student screen is empty
+        // when the save button is clicked
         if (newStudentName.equals("")) {
-          tempChangeLabel(lbl_addStudentTitle, "Please enter a name!");
-        } else if (newStudentId.equals("") || !newStudentId.matches("\\d+")) {
           tempChangeLabel(lbl_addStudentTitle,
-                          "Please enter a positive numerical id!");
-        } else if (!Engine.isIdUnique(Integer.parseInt(newStudentId))) {
-          tempChangeLabel(lbl_addStudentTitle, "That id is already taken!");
-        } else {
-          Engine.insertSorted(
-              new Student(Integer.parseInt(newStudentId), newStudentName,
-                          (int)comboBox_addStudentGrade.getSelectedItem()));
-
+                          "Please enter a name!"); //  display an error message
+                                                   //  and prevent saving
+        } else if (newStudentId.equals("") ||
+                   !newStudentId.matches(
+                       "\\d+")) { // else if the id is null or not a number
+          tempChangeLabel(
+              lbl_addStudentTitle,
+              "Please enter a positive numerical id!"); // display an error and
+                                                        // prevent saving
+        } else if (!Engine.isIdUnique(Integer.parseInt(
+                       newStudentId))) { // if the id entered is not unique
+          tempChangeLabel(
+              lbl_addStudentTitle,
+              "That id is already taken!"); // display error and prevent saving
+        } else { // if all preconditions for saving are satisfied
+          Engine.insertSorted(new Student(
+              Integer.parseInt(newStudentId), newStudentName,
+              (int)comboBox_addStudentGrade
+                  .getSelectedItem())); // insert the student into the correct
+                                        // position in the already sorted list
+          // update the students table for with the new students and go back to
+          // the students view panel
           updateStudentViewTable(table_viewStudents);
           masterLayout.show(contentPane, "panel_viewStudents");
         }
       }
     });
 
+    // listeners for the student edit selection screen
+
+    // add an action listener to the Edit button on the edit student selection
+    // panel which will go to the edit panel with the info filled in for the
+    // selected student
     btn_editStudentSelectionEdit.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(final ActionEvent e) {
+        // get the index for the currently selected student (the student to
+        // edit) using binary search
         currentlyEditingStudent = Engine.binarySearchStudentsList(
             (int)comboBox_editStudentSelection.getSelectedItem(), 0,
             Engine.getStudents().size() - 1);
 
-        System.out.printf(
-            "GUI#attachListeners#actionPerformed currentlyEditingStudent: %s \n",
-            currentlyEditingStudent); // __AUTO_GENERATED_PRINT_VAR__
-
+        // get the student from the current selection list based on the index
+        // and store it in a global variable for later use
         final Student student =
             Engine.getStudents().get(currentlyEditingStudent);
 
+        // fill in the edit fields with the existent information
         textField_editStudentName.setText(student.getName());
         comboBox_editStudentGrade.setSelectedItem((Object)student.getGrade());
         textField_editStudentId.setText(String.valueOf(student.getId()));
 
+        // go to the edit student panel with the newly filled in information
         masterLayout.show(contentPane, "panel_editStudent");
       }
     });
 
+    // add an action listener to the Cancel button on the edit student selection
+    // panel which will go back to the view students panel
     btn_editStudentSelectionCancel.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(final ActionEvent e) {
@@ -426,6 +566,10 @@ public class GUI {
       }
     });
 
+    // listeners for the edit student screen
+
+    // add an action listener to the Cancel button on the edit student
+    // panel which will go back to the view students panel
     btn_editStudentCancel.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(final ActionEvent e) {
@@ -433,40 +577,62 @@ public class GUI {
       }
     });
 
+    // add an action listener to the Save button on the edit student
+    // panel which edit the current student with the given information and
+    // return to the view students screen
     btn_editStudentSave.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(final ActionEvent e) {
         final String newStudentId = textField_editStudentId.getText(),
                      newStudentName = textField_editStudentName.getText();
 
-        if (newStudentName.equals("")) {
-          tempChangeLabel(lbl_editStudentTitle, "Please enter a name!");
-        } else if (newStudentId.equals("") || !newStudentId.matches("\\d+")) {
+        if (newStudentName.equals(
+                "")) { // if there is no name in the name field
+          tempChangeLabel(
+              lbl_editStudentTitle,
+              "Please enter a name!"); // display an error and prevent saving
+        } else if (newStudentId.equals("") ||
+                   !newStudentId.matches("\\d+")) { // else if the new id is
+                                                    // null or is not an integer
+          tempChangeLabel(
+              lbl_editStudentTitle,
+              "Please enter a positive numerical id!"); // display an error and
+                                                        // prevent saving
+        } else if (!Engine.isIdUnique(Integer.parseInt(
+                       newStudentId))) { // else if the new id is not unique
           tempChangeLabel(lbl_editStudentTitle,
-                          "Please enter a positive numerical id!");
-        } else if (!Engine.isIdUnique(Integer.parseInt(newStudentId))) {
-          tempChangeLabel(lbl_editStudentTitle, "That id is already taken!");
-        } else {
+                          "That id is already taken!"); // display an error and
+                                                        // prevent saving
+        } else { // if all preconditions for saving are fulfilled
+          // get the student object to alter
           final Student currentStudent =
               Engine.getStudents().get(currentlyEditingStudent);
 
+          // update the attributes of the student object to what is in the input
+          // fields
           currentStudent.setName(textField_editStudentName.getText());
-
           currentStudent.setGrade(
               (int)comboBox_editStudentGrade.getSelectedItem());
-
           currentStudent.setId(
               Integer.parseInt(textField_editStudentId.getText()));
 
+          // re-sort the students array, to account for the case where the user
+          // edits the id of the student such that the student is no longer in
+          // place
           Engine.sortStudents();
 
+          // update the students table for with the new students and go back to
+          // the students view panel
           updateStudentViewTable(table_viewStudents);
-
           masterLayout.show(contentPane, "panel_viewStudents");
         }
       }
     });
 
+    // listeners for the delete student screen
+
+    // add an action listener to the Cancel button on the delete student
+    // panel which will go back to the view students panel
     btn_deleteStudentCancel.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(final ActionEvent e) {
@@ -474,19 +640,30 @@ public class GUI {
       }
     });
 
+    // add an action listener to the Delete button on the delete student
+    // panel which delete the selected student
     btn_deleteStudentDelete.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(final ActionEvent e) {
-        final int studentId = (int)comboBox_deleteStudent.getSelectedItem();
+        final int studentId =
+            (int)comboBox_deleteStudent
+                .getSelectedItem(); // get the id of the student in question
         final int index = Engine.binarySearchStudentsList(
-            studentId, 0, Engine.getStudents().size() - 1);
-        Engine.getStudents().remove(Engine.getStudents().get(index));
+            studentId, 0,
+            Engine.getStudents().size() -
+                1); // get the index of the selected
+                    // student in the ArrayList using binary search
+        Engine.getStudents().remove(Engine.getStudents().get(
+            index)); // remove the selected student from the students array
 
+        // update the students table and go back to the view students panel
         updateStudentViewTable(table_viewStudents);
         masterLayout.show(contentPane, "panel_viewStudents");
       }
     });
   }
+
+  // getters and setters
 
   public JTable getTableViewStudents() { return table_viewStudents; }
 }
