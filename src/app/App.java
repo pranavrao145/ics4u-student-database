@@ -4,12 +4,12 @@ import java.awt.EventQueue;
 
 public class App {
 
-  public static void main(String[] args) {
+  public static void main(final String[] args) {
     EventQueue.invokeLater(new Runnable() {
       public void run() {
         try {
-          new GUI();
-        } catch (Exception e) {
+          Engine.run(new GUI());
+        } catch (final Exception e) {
           e.printStackTrace();
         }
       }
