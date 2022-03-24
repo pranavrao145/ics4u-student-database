@@ -456,6 +456,8 @@ public class GUI {
           currentStudent.setId(
               Integer.parseInt(textField_editStudentId.getText()));
 
+          Engine.sortStudents();
+
           updateStudentViewTable(table_viewStudents);
 
           masterLayout.show(contentPane, "panel_viewStudents");

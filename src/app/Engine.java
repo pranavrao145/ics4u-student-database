@@ -107,6 +107,22 @@ public class Engine {
     students.add(currentIndex, student);
   }
 
+  public static void sortStudents() {
+    int size = students.size();
+
+    for (int i = 1; i < size; i++) {
+      Student student = students.get(i);
+      int j = i - 1;
+
+      while (j >= 0 && students.get(j).getId() > student.getId()) {
+        students.set(j + 1, students.get(j));
+        j--;
+      }
+
+      students.set(j + 1, student);
+    }
+  }
+
   public static int binarySearchStudentsList(int studentId, int start,
                                              int end) {
 
