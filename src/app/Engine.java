@@ -125,6 +125,12 @@ public class Engine {
     return -1;
   }
 
+  public static boolean isIdUnique(int studentId) {
+    return binarySearchStudentsList(studentId, 0, students.size() - 1) == -1
+        ? true
+        : false;
+  }
+
   public static void run(final GUI currentGUI) { initialize(currentGUI); }
 
   public static ArrayList<Student> getStudents() { return students; }

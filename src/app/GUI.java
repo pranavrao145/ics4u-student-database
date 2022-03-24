@@ -382,6 +382,8 @@ public class GUI {
         } else if (newStudentId.equals("") || !newStudentId.matches("\\d+")) {
           tempChangeLabel(lbl_addStudentTitle,
                           "Please enter a positive numerical id!");
+        } else if (!Engine.isIdUnique(Integer.parseInt(newStudentId))) {
+          tempChangeLabel(lbl_addStudentTitle, "That id is already taken!");
         } else {
           Engine.insertSorted(
               new Student(Integer.parseInt(newStudentId), newStudentName,
@@ -440,6 +442,8 @@ public class GUI {
         } else if (newStudentId.equals("") || !newStudentId.matches("\\d+")) {
           tempChangeLabel(lbl_editStudentTitle,
                           "Please enter a positive numerical id!");
+        } else if (!Engine.isIdUnique(Integer.parseInt(newStudentId))) {
+          tempChangeLabel(lbl_editStudentTitle, "That id is already taken!");
         } else {
           final Student currentStudent =
               Engine.getStudents().get(currentlyEditingStudent);
