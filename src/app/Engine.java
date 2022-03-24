@@ -49,7 +49,7 @@ public class Engine {
 
       for (final Student student : students) {
         final String content =
-            String.format("%s;%d", student.getName(), student.getGrade());
+            String.format("%d;%s;%d", student.getName(), student.getGrade());
 
         studentWriter.println(content);
       }
@@ -92,6 +92,27 @@ public class Engine {
     } catch (final Exception e) {
       e.printStackTrace();
     }
+  }
+
+  public static void insertSorted(Student student) {
+    int studentId = student.getId(), currentIndex = 0;
+
+    if (students.size() == 0) {
+      students.add(student);
+      return;
+    }
+
+    while (currentIndex != students.size() &&
+           studentId > students.get(currentIndex).getId()) {
+      currentIndex++;
+    }
+
+    if (currentIndex == students.size()) {
+      students.add(student);
+      return;
+    }
+
+    students.add(currentIndex, student);
   }
 
   public static void run(final GUI currentGUI) { initialize(currentGUI); }

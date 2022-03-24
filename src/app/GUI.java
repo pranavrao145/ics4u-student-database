@@ -18,7 +18,6 @@ import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
 
 public class GUI {
-
   private JFrame frame;
   private Container contentPane;
 
@@ -383,7 +382,7 @@ public class GUI {
         } else if (newStudentId.equals("") || !newStudentId.matches("-?\\d+")) {
           tempChangeLabel(lbl_addStudentTitle, "Please enter a numerical id!");
         } else {
-          Engine.getStudents().add(
+          Engine.insertSorted(
               new Student(Integer.parseInt(newStudentId), newStudentName,
                           (int)comboBox_addStudentGrade.getSelectedItem()));
 
