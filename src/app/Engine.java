@@ -26,7 +26,6 @@ public class Engine {
   public static void saveDataToFile() {
 
     try {
-
       final File studentFile = new File("data/student_logs.txt"),
                  teacherFile = new File("data/teacher_logs.txt"),
                  internationalStudentFile =
