@@ -167,7 +167,7 @@ public class GUI {
     frame.getContentPane().add(panel_addStudent, "panel_addStudent");
 
     lbl_addStudentTitle = new JLabel("Create Student");
-    lbl_addStudentTitle.setBounds(12, 12, 186, 17);
+    lbl_addStudentTitle.setBounds(12, 12, 416, 17);
     panel_addStudent.add(lbl_addStudentTitle);
 
     lbl_addStudentName = new JLabel("Name:");
@@ -259,8 +259,8 @@ public class GUI {
     panel_editStudent.setLayout(null);
     frame.getContentPane().add(panel_editStudent, "panel_editStudent");
 
-    lbl_editStudentTitle = new JLabel("Create Student");
-    lbl_editStudentTitle.setBounds(12, 12, 186, 17);
+    lbl_editStudentTitle = new JLabel("Edit Student");
+    lbl_editStudentTitle.setBounds(12, 12, 416, 17);
     panel_editStudent.add(lbl_editStudentTitle);
 
     lbl_editStudentName = new JLabel("Name:");
@@ -374,13 +374,14 @@ public class GUI {
       @Override
       public void actionPerformed(final ActionEvent e) {
 
-        String newStudentId = textField_addStudentId.getText(),
-               newStudentName = textField_addStudentName.getText();
+        final String newStudentId = textField_addStudentId.getText(),
+                     newStudentName = textField_addStudentName.getText();
 
         if (newStudentName.equals("")) {
           tempChangeLabel(lbl_addStudentTitle, "Please enter a name!");
-        } else if (newStudentId.equals("") || !newStudentId.matches("-?\\d+")) {
-          tempChangeLabel(lbl_addStudentTitle, "Please enter a numerical id!");
+        } else if (newStudentId.equals("") || !newStudentId.matches("\\d+")) {
+          tempChangeLabel(lbl_addStudentTitle,
+                          "Please enter a positive numerical id!");
         } else {
           Engine.insertSorted(
               new Student(Integer.parseInt(newStudentId), newStudentName,
@@ -395,15 +396,20 @@ public class GUI {
     btn_editStudentSelectionEdit.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(final ActionEvent e) {
+        currentlyEditingStudent = Engine.binarySearchStudentsList(
+            (int)comboBox_editStudentSelection.getSelectedItem(), 0,
+            Engine.getStudents().size() - 1);
 
-        currentlyEditingStudent =
-            comboBox_editStudentSelection.getSelectedIndex();
+        System.out.printf(
+            "GUI#attachListeners#actionPerformed currentlyEditingStudent: %s \n",
+            currentlyEditingStudent); // __AUTO_GENERATED_PRINT_VAR__
 
         final Student student =
             Engine.getStudents().get(currentlyEditingStudent);
 
         textField_editStudentName.setText(student.getName());
         comboBox_editStudentGrade.setSelectedItem((Object)student.getGrade());
+        textField_editStudentId.setText(String.valueOf(student.getId()));
 
         masterLayout.show(contentPane, "panel_editStudent");
       }
@@ -426,9 +432,14 @@ public class GUI {
     btn_editStudentSave.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(final ActionEvent e) {
-        if (textField_editStudentName.getText().equals("")) {
-          tempChangeLabel(lbl_editStudentTitle, "Please enter a name!");
+        final String newStudentId = textField_editStudentId.getText(),
+                     newStudentName = textField_editStudentName.getText();
 
+        if (newStudentName.equals("")) {
+          tempChangeLabel(lbl_editStudentTitle, "Please enter a name!");
+        } else if (newStudentId.equals("") || !newStudentId.matches("\\d+")) {
+          tempChangeLabel(lbl_editStudentTitle,
+                          "Please enter a positive numerical id!");
         } else {
           final Student currentStudent =
               Engine.getStudents().get(currentlyEditingStudent);
@@ -437,6 +448,9 @@ public class GUI {
 
           currentStudent.setGrade(
               (int)comboBox_editStudentGrade.getSelectedItem());
+
+          currentStudent.setId(
+              Integer.parseInt(textField_editStudentId.getText()));
 
           updateStudentViewTable(table_viewStudents);
 
@@ -455,7 +469,9 @@ public class GUI {
     btn_deleteStudentDelete.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(final ActionEvent e) {
-        final int index = comboBox_deleteStudent.getSelectedIndex();
+        final int studentId = (int)comboBox_deleteStudent.getSelectedItem();
+        final int index = Engine.binarySearchStudentsList(
+            studentId, 0, Engine.getStudents().size() - 1);
         Engine.getStudents().remove(Engine.getStudents().get(index));
 
         updateStudentViewTable(table_viewStudents);

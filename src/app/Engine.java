@@ -48,8 +48,8 @@ public class Engine {
           new PrintWriter(new FileWriter(studentFile, true));
 
       for (final Student student : students) {
-        final String content =
-            String.format("%d;%s;%d", student.getName(), student.getGrade());
+        final String content = String.format(
+            "%d;%s;%d", student.getId(), student.getName(), student.getGrade());
 
         studentWriter.println(content);
       }
@@ -62,13 +62,10 @@ public class Engine {
   }
 
   public static void readDataFromFile() {
-
     try {
-
       final File studentFile = new File("data/student_logs.txt");
 
       if (studentFile.exists()) {
-
         final BufferedReader studentReader =
             new BufferedReader(new FileReader(studentFile));
 
@@ -97,11 +94,6 @@ public class Engine {
   public static void insertSorted(Student student) {
     int studentId = student.getId(), currentIndex = 0;
 
-    if (students.size() == 0) {
-      students.add(student);
-      return;
-    }
-
     while (currentIndex != students.size() &&
            studentId > students.get(currentIndex).getId()) {
       currentIndex++;
@@ -113,6 +105,24 @@ public class Engine {
     }
 
     students.add(currentIndex, student);
+  }
+
+  public static int binarySearchStudentsList(int studentId, int start,
+                                             int end) {
+
+    if (end >= start) {
+      int mid = start + (end - start);
+
+      if (students.get(mid).getId() == studentId)
+        return mid;
+
+      if (students.get(mid).getId() > studentId)
+        return binarySearchStudentsList(studentId, start, mid - 1);
+
+      return binarySearchStudentsList(studentId, mid + 1, end);
+    }
+
+    return -1;
   }
 
   public static void run(final GUI currentGUI) { initialize(currentGUI); }
