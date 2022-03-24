@@ -18,52 +18,54 @@ import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
 
 public class GUI {
+  // the following set of fields represent the various GUI components used in
+  // this App. To simplify the identification of components, all components are
+  // named using this convention: componentType_panelNameComponentName
+  // For example, a button to save on the add student panel would be named
+  // btn_addStudentSave
+
   private JFrame frame;
-  private Container contentPane;
+  private Container
+      contentPane; // this is a special variable that will store the content
+                   // pane of the frame so it does not need to be re-read every
+                   // time we want to use it
+  private CardLayout masterLayout; // this CardLayout is being stored because it
+                                   // will be essential in switching views
 
-  private CardLayout masterLayout;
-  private JTextField textField_addStudentName;
-  private JTable table_viewStudents;
+  // rest of the components, grouped by the panel they are on and following the
+  // naming convention above
 
-  private DefaultComboBoxModel<Integer> defaultDeletionOptions;
-  DefaultComboBoxModel<Integer> defaultEditOptions;
-  private DefaultComboBoxModel<Integer> gradeOptions;
-  private JTextField textField_addStudentId;
-  private JLabel lbl_addStudentTitle;
-  private JLabel lbl_addStudentName;
-  private JLabel lbl_addStudentGrade;
+  private JPanel panel_addStudent, panel_editStudent,
+      panel_editStudentSelection, panel_viewStudents, panel_deleteStudent;
+
+  private JLabel lbl_addStudentName, lbl_addStudentTitle, lbl_addStudentGrade,
+      lbl_addStudentId;
+  private JButton btn_addStudentSave, btn_addStudentCancel;
+  private JTextField textField_addStudentName, textField_addStudentId;
   private JComboBox<Integer> comboBox_addStudentGrade;
-  private JButton btn_addStudentCancel;
-  private JButton btn_addStudentSave;
-  private JLabel lbl_addStudentId;
-  private JTextField textField_editStudentName;
-  private JTextField textField_editStudentId;
-  private JPanel panel_editStudent;
-  private JLabel lbl_editStudentTitle;
-  private JLabel lbl_editStudentName;
-  private JLabel lbl_editStudentGrade;
-  private JComboBox<Integer> comboBox_editStudentGrade;
-  private JButton btn_editStudentCancel;
-  private JButton btn_editStudentSave;
-  private JLabel lbl_editStudentId;
-  private JLabel lbl_viewStudentsTitle;
-  private JButton btn_viewStudentsCreate;
-  private JButton btn_viewStudentsDelete;
-  private JButton btn_viewStudentsEditSelection;
-  private JButton btn_editStudentSelectionCancel;
-  private JButton btn_editStudentSelectionEdit;
-  private JComboBox<Integer> comboBox_editStudentSelection;
-  private JLabel lbl_editStudentSelection;
-  private JPanel panel_deleteStudent;
-  private JButton btn_deleteStudentCancel;
-  private JButton btn_deleteStudentDelete;
-  private JComboBox<Integer> comboBox_deleteStudent;
-  private JLabel lbl_deleteStudent;
 
+  private JLabel lbl_editStudentSelection;
+  private JComboBox<Integer> comboBox_editStudentSelection;
+  private JButton btn_editStudentSelectionCancel, btn_editStudentSelectionEdit;
+
+  private JTextField textField_editStudentName, textField_editStudentId;
+  private JLabel lbl_editStudentTitle, lbl_editStudentName,
+      lbl_editStudentGrade, lbl_editStudentId;
+  private JComboBox<Integer> comboBox_editStudentGrade;
+  private JButton btn_editStudentCancel, btn_editStudentSave;
   private int currentlyEditingStudent;
-  private JPanel panel_addStudent;
-  private JPanel panel_editStudentSelection;
-  private JPanel panel_viewStudents;
+
+  private JLabel lbl_viewStudentsTitle;
+  private JTable table_viewStudents;
+  private JButton btn_viewStudentsDelete, btn_viewStudentsCreate,
+      btn_viewStudentsEditSelection;
+
+  private JButton btn_deleteStudentCancel, btn_deleteStudentDelete;
+  private JLabel lbl_deleteStudent;
+  private JComboBox<Integer> comboBox_deleteStudent;
+
+  private DefaultComboBoxModel<Integer> defaultDeletionOptions,
+      defaultEditOptions, gradeOptions;
 
   public GUI() {
     initializeValues();
