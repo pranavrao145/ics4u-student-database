@@ -9,7 +9,12 @@ Author: Pranav Rao
 Date: March 24, 2022
 
 LOCATIONS OF FULFILLED REQUIREMENTS:
-TODO: add fulfilled requirements
+- Sorting:
+  - Method to insert into the array in a sorted manner: app/Engine.java:151,
+used in app/GUI.java:491
+  - Method to sort entire list: app/Engine.java:185, used in app/GUI.java:616
+- Searching: binary search imlemented in app/Engine.java:218, used in muliple
+places such as app/GUI.java:527 and app/GUI.java:656
 *******************************************************************************/
 
 package app; // declare this class as part of the app package
