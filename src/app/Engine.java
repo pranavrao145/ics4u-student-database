@@ -148,11 +148,12 @@ public class Engine {
    *
    * @param student - the student to insert
    */
-  public static void insertSorted(Student student) {
+  public static void insertSorted(final Student student) {
     // create two int variables. The first will store the id of the student to
     // be inserted. The second is starts a counter at 0, which will be used to
     // figure out the student's place in the list
-    int studentId = student.getId(), currentIndex = 0;
+    final int studentId = student.getId();
+    int currentIndex = 0;
 
     // while the current index is not the same as the
     // size of the students array AND the student to
@@ -183,11 +184,11 @@ public class Engine {
    */
   public static void sortStudents() {
     // get the size of the students array
-    int size = students.size();
+    final int size = students.size();
 
     // for every index starting from 1 and moving towards the size of the list
     for (int i = 1; i < size; i++) {
-      Student student = students.get(i); // get the student at the given index
+      final Student student = students.get(i); // get the student at the given index
       int j = i - 1; // calculate the value of ONE INDEX BEFORE the current
                      // index and store it in a variable
 
@@ -213,12 +214,12 @@ public class Engine {
    * @param end - the point uptil which to search in the array
    * @return - index of the student with the given id if found, else -1
    */
-  public static int binarySearchStudentsList(int studentId, int start,
-                                             int end) {
+  public static int binarySearchStudentsList(final int studentId, final int start,
+                                             final int end) {
     // if the ending index is greater than or equal to the starting index
     // (meaning there is still more to search)
     if (end >= start) {
-      int mid = start + (end - start); // calculate the middle index
+      final int mid = start + (end - start); // calculate the middle index
 
       // if the student at the middle index is the right student, return the
       // middle index
@@ -246,7 +247,7 @@ public class Engine {
    * @param studentId - the id to check
    * @return - true if the id IS unique, else false
    */
-  public static boolean isIdUnique(int studentId) {
+  public static boolean isIdUnique(final int studentId) {
     // use a binary search to determine if a student with the id is already in
     // the list
     return binarySearchStudentsList(studentId, 0, students.size() - 1) == -1
