@@ -60,7 +60,7 @@ public class GUI {
   private JComboBox<Integer> comboBox_addStudentGrade;
 
   private JLabel lbl_editStudentSelection;
-  private JComboBox<Integer> comboBox_editStudentSelection;
+  private JTextField textField_editStudentSelection;
   private JButton btn_editStudentSelectionCancel, btn_editStudentSelectionEdit;
 
   private JTextField textField_editStudentName, textField_editStudentId;
@@ -76,13 +76,12 @@ public class GUI {
       btn_viewStudentsEditSelection;
 
   private JButton btn_deleteStudentCancel, btn_deleteStudentDelete;
+  private JTextField textField_deleteStudent;
   private JLabel lbl_deleteStudent;
-  private JComboBox<Integer> comboBox_deleteStudent;
 
-  // this is  special variables that represent the models used to power the
-  // comboBox components in this program
-  private DefaultComboBoxModel<Integer> defaultDeletionOptions,
-      defaultEditOptions, gradeOptions;
+  // this is a  special variable that represents the models used to power the
+  // grade selection comboboxes
+  private DefaultComboBoxModel<Integer> gradeOptions;
 
   /**
    * This is a constructor for the GUI. When the GUI is made in the App class,
@@ -103,11 +102,6 @@ public class GUI {
   private void initializeValues() {
     gradeOptions =
         new DefaultComboBoxModel<Integer>(new Integer[] {9, 10, 11, 12});
-
-    // these are empty because deletion options are intially empty and set on
-    // the go
-    defaultDeletionOptions = new DefaultComboBoxModel<Integer>();
-    defaultEditOptions = new DefaultComboBoxModel<Integer>();
   }
 
   /**
@@ -207,27 +201,6 @@ public class GUI {
           student.getId(), student.getName(),
           student.getGrade()}); // add a row to the table which contains the
                                 // information for that particular student
-    }
-  }
-
-  /**
-   *  This method is a GUI utility method that will update a comboBox to show
-   * the ids of the students currently stored in the database
-   *
-   * @param comboBox - the variable for the comboBox to update
-   */
-  private void updateStudentComboBox(final JComboBox<Integer> comboBox) {
-    // get the combo box model of the given combo box (needed to manipulate
-    // combo box data)
-    final DefaultComboBoxModel<Integer> comboBoxModel =
-        (DefaultComboBoxModel<Integer>)comboBox.getModel();
-    // remove all elements from the combo box (including the title row)
-    comboBoxModel.removeAllElements();
-
-    for (final Student student :
-         Engine.getStudents()) { // for each of the students currently stored
-      comboBoxModel.addElement(
-          student.getId()); // add the student's id to the comboBox
     }
   }
 
@@ -335,13 +308,14 @@ public class GUI {
     btn_editStudentSelectionEdit.setBounds(225, 231, 105, 27);
     panel_editStudentSelection.add(btn_editStudentSelectionEdit);
 
-    comboBox_editStudentSelection = new JComboBox<Integer>(defaultEditOptions);
-    comboBox_editStudentSelection.setBounds(146, 109, 133, 26);
-    panel_editStudentSelection.add(comboBox_editStudentSelection);
-
-    lbl_editStudentSelection = new JLabel("Choose a student to edit:");
-    lbl_editStudentSelection.setBounds(126, 80, 171, 17);
+    lbl_editStudentSelection = new JLabel("Enter a student ID to edit:");
+    lbl_editStudentSelection.setBounds(12, 12, 416, 17);
     panel_editStudentSelection.add(lbl_editStudentSelection);
+
+    textField_editStudentSelection = new JTextField();
+    textField_editStudentSelection.setBounds(149, 109, 133, 21);
+    panel_editStudentSelection.add(textField_editStudentSelection);
+    textField_editStudentSelection.setColumns(10);
 
     panel_editStudent = new JPanel();
     panel_editStudent.setLayout(null);
@@ -397,13 +371,14 @@ public class GUI {
     btn_deleteStudentDelete.setBounds(225, 231, 105, 27);
     panel_deleteStudent.add(btn_deleteStudentDelete);
 
-    comboBox_deleteStudent = new JComboBox<Integer>(defaultDeletionOptions);
-    comboBox_deleteStudent.setBounds(146, 109, 133, 26);
-    panel_deleteStudent.add(comboBox_deleteStudent);
-
-    lbl_deleteStudent = new JLabel("Choose a student to delete:");
-    lbl_deleteStudent.setBounds(126, 80, 171, 17);
+    lbl_deleteStudent = new JLabel("Enter a student ID to delete:");
+    lbl_deleteStudent.setBounds(12, 12, 416, 17);
     panel_deleteStudent.add(lbl_deleteStudent);
+
+    textField_deleteStudent = new JTextField();
+    textField_deleteStudent.setBounds(146, 112, 133, 21);
+    panel_deleteStudent.add(textField_deleteStudent);
+    textField_deleteStudent.setColumns(10);
   }
 
   /**
@@ -452,7 +427,6 @@ public class GUI {
         } else { // if there are students to display
           // update the student selection combobox and switch to the edit
           // student selection screen
-          updateStudentComboBox(comboBox_editStudentSelection);
           masterLayout.show(contentPane, "panel_editStudentSelection");
         }
       }
@@ -470,7 +444,6 @@ public class GUI {
         } else { // if there are students to display
           // update the student selection combobox and switch to the delete
           // student selection screen
-          updateStudentComboBox(comboBox_deleteStudent);
           masterLayout.show(contentPane, "panel_deleteStudent");
         }
       }
@@ -536,29 +509,50 @@ public class GUI {
     btn_editStudentSelectionEdit.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(final ActionEvent e) {
-        // get the index for the currently selected student (the student to
-        // edit) using binary search
-        currentlyEditingStudent = Engine.binarySearchStudentsList(
-            (int)comboBox_editStudentSelection.getSelectedItem(), 0,
-            Engine.getStudents().size() - 1);
+        // get the id that the user has inputted
+        final String studentId = textField_editStudentSelection.getText();
 
-        // get the student from the current selection list based on the index
-        // and store it in a global variable for later use
-        final Student student =
-            Engine.getStudents().get(currentlyEditingStudent);
+        // if there is no student id given or it is not a positive integer
+        if (studentId.equals("") ||
+            !studentId.matches("\\d+")) { // else if the new id is
+                                          // null or is not an integer
+          tempChangeLabel(
+              lbl_editStudentSelection,
+              "Please enter a positive numerical id!"); // display an error and
+                                                        // prevent moving on to
+                                                        // eidt
+        } else { // if the id is in valid format
+          // attempt to find the index of the student with the given id using
+          // binary search and store it in a global variable for later use
+          currentlyEditingStudent = Engine.binarySearchStudentsList(
+              Integer.parseInt(studentId), 0, Engine.getStudents().size() - 1);
 
-        // fill in the edit fields with the existent information
-        textField_editStudentName.setText(student.getName());
-        comboBox_editStudentGrade.setSelectedItem((Object)student.getGrade());
-        textField_editStudentId.setText(String.valueOf(student.getId()));
+          // if the index is NOT -1 (meaning the student was found)
+          if (currentlyEditingStudent != -1) {
+            final Student student =
+                Engine.getStudents().get(currentlyEditingStudent);
 
-        // go to the edit student panel with the newly filled in information
-        masterLayout.show(contentPane, "panel_editStudent");
+            // fill in the edit fields with the existent information
+            textField_editStudentName.setText(student.getName());
+            comboBox_editStudentGrade.setSelectedItem(
+                (Object)student.getGrade());
+            textField_editStudentId.setText(String.valueOf(student.getId()));
+
+            // go to the edit student panel with the newly filled in information
+            masterLayout.show(contentPane, "panel_editStudent");
+          } else { // if the student is NOT found
+            tempChangeLabel(
+                lbl_editStudentSelection,
+                "A student with that ID does not exist!"); // display an error
+                                                           // and prevent moving
+                                                           // to the edit screen
+          }
+        }
       }
     });
 
-    // add an action listener to the Cancel button on the edit student selection
-    // panel which will go back to the view students panel
+    // add an action listener to the Cancel button on the edit student
+    // selection panel which will go back to the view students panel
     btn_editStudentSelectionCancel.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(final ActionEvent e) {
@@ -596,33 +590,33 @@ public class GUI {
                                                     // null or is not an integer
           tempChangeLabel(
               lbl_editStudentTitle,
-              "Please enter a positive numerical id!"); // display an error and
-                                                        // prevent saving
+              "Please enter a positive numerical id!"); // display an error
+                                                        // and prevent saving
         } else if (!Engine.isIdUnique(Integer.parseInt(
                        newStudentId))) { // else if the new id is not unique
           tempChangeLabel(lbl_editStudentTitle,
-                          "That id is already taken!"); // display an error and
-                                                        // prevent saving
+                          "That id is already taken!"); // display an error
+                                                        // and prevent saving
         } else { // if all preconditions for saving are fulfilled
           // get the student object to alter
           final Student currentStudent =
               Engine.getStudents().get(currentlyEditingStudent);
 
-          // update the attributes of the student object to what is in the input
-          // fields
+          // update the attributes of the student object to what is in the
+          // input fields
           currentStudent.setName(textField_editStudentName.getText());
           currentStudent.setGrade(
               (int)comboBox_editStudentGrade.getSelectedItem());
           currentStudent.setId(
               Integer.parseInt(textField_editStudentId.getText()));
 
-          // re-sort the students array, to account for the case where the user
-          // edits the id of the student such that the student is no longer in
-          // place
+          // re-sort the students array, to account for the case where the
+          // user edits the id of the student such that the student is no
+          // longer in place
           Engine.sortStudents();
 
-          // update the students table for with the new students and go back to
-          // the students view panel
+          // update the students table for with the new students and go back
+          // to the students view panel
           updateStudentViewTable(table_viewStudents);
           masterLayout.show(contentPane, "panel_viewStudents");
         }
@@ -645,20 +639,40 @@ public class GUI {
     btn_deleteStudentDelete.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(final ActionEvent e) {
-        final int studentId =
-            (int)comboBox_deleteStudent
-                .getSelectedItem(); // get the id of the student in question
-        final int index = Engine.binarySearchStudentsList(
-            studentId, 0,
-            Engine.getStudents().size() -
-                1); // get the index of the selected
-                    // student in the ArrayList using binary search
-        Engine.getStudents().remove(Engine.getStudents().get(
-            index)); // remove the selected student from the students array
+        // get the id that the user has inputted
+        final String studentId = textField_deleteStudent.getText();
 
-        // update the students table and go back to the view students panel
-        updateStudentViewTable(table_viewStudents);
-        masterLayout.show(contentPane, "panel_viewStudents");
+        // if there is no student id given or it is not a positive integer
+        if (studentId.equals("") ||
+            !studentId.matches("\\d+")) { // else if the new id is
+                                          // null or is not an integer
+          tempChangeLabel(
+              lbl_deleteStudent,
+              "Please enter a positive numerical id!"); // display an error and
+                                                        // prevent deleting
+        } else { // if the id is in valid format
+          // attempt to find the index of the student with the given id using
+          // binary search
+          final int currentlyDeletingStudent = Engine.binarySearchStudentsList(
+              Integer.parseInt(studentId), 0, Engine.getStudents().size() - 1);
+
+          // if the index is NOT -1 (meaning the student was found)
+          if (currentlyDeletingStudent != -1) {
+            Engine.getStudents().remove(Engine.getStudents().get(
+                currentlyDeletingStudent)); // remove the selected student from
+                                            // the students array
+
+            // update the students table and go back to the view students panel
+            updateStudentViewTable(table_viewStudents);
+            masterLayout.show(contentPane, "panel_viewStudents");
+          } else { // if the student is NOT found
+            tempChangeLabel(
+                lbl_deleteStudent,
+                "A student with that ID does not exist!"); // display an error
+                                                           // and prevent
+                                                           // deletion
+          }
+        }
       }
     });
   }

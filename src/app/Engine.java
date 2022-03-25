@@ -188,7 +188,8 @@ public class Engine {
 
     // for every index starting from 1 and moving towards the size of the list
     for (int i = 1; i < size; i++) {
-      final Student student = students.get(i); // get the student at the given index
+      final Student student =
+          students.get(i); // get the student at the given index
       int j = i - 1; // calculate the value of ONE INDEX BEFORE the current
                      // index and store it in a variable
 
@@ -214,8 +215,8 @@ public class Engine {
    * @param end - the point uptil which to search in the array
    * @return - index of the student with the given id if found, else -1
    */
-  public static int binarySearchStudentsList(final int studentId, final int start,
-                                             final int end) {
+  public static int binarySearchStudentsList(final int studentId,
+                                             final int start, final int end) {
     // if the ending index is greater than or equal to the starting index
     // (meaning there is still more to search)
     if (end >= start) {

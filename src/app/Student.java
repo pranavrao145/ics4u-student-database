@@ -1,12 +1,12 @@
 /******************************************************************************
-Program: Student Class (Character Creation Interface)
+Program: Student Class (Student Database)
 
 Description: This is the Student class. It contains a name inherited from its
 parent, Person, as well as an additional grade attribute.
 
 Author: Pranav Rao
 
-Date: March 1, 2022
+Date: March 24, 2022
 *******************************************************************************/
 
 package app; // declare this class as a part of the app package
